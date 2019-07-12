@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import { Calendar, Agenda } from "react-native-calendars";
 import Modal from "react-native-modal";
+import ActionButton from "react-native-action-button";
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface Props {}
 
@@ -185,6 +187,17 @@ export default class TestCalender extends React.Component<Props, State> {
           renderEmptyDate={this.renderEmptyDate}
           rowHasChanged={this.rowHasChanged}
         />
+        <ActionButton buttonColor="rgba(231,76,60,1)">
+          <ActionButton.Item buttonColor='#9b59b6' title="New Task" onPress={() => console.log("notes tapped!")}>
+            <Icon name="md-create" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#3498db' title="Notifications" onPress={() => {}}>
+            <Icon name="md-notifications-off" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#1abc9c' title="All Tasks" onPress={() => {}}>
+            <Icon name="md-done-all" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+        </ActionButton>
         <Modal isVisible={this.state.modalVisible}>
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}

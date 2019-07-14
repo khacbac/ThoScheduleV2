@@ -3,8 +3,8 @@
  */
 
 import { AppRegistry } from "react-native";
-import App from "./App";
 import TestCalendar from "./src/component/HomeScreen";
 import { name as appName } from "./app.json";
+import AppStore from "./root/AppStore";
 
-AppRegistry.registerComponent(appName, () => App);
+AppRegistry.registerComponent(appName, () => AppStore);

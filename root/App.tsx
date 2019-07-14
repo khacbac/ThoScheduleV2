@@ -28,35 +28,36 @@ import {
 import ActionButton from "react-native-action-button";
 import Icon from "react-native-vector-icons/Ionicons";
 import { createStackNavigator, createAppContainer } from "react-navigation";
-import HomeScreen from "./src/component/HomeScreen";
-import DetailScreen from "./src/component/DetailScreen";
-import ScreenName from "./src/config/ScreenName";
-import { Provider } from "react-redux";
-import { createStore, combineReducers } from "redux";
-import ReducerName from "./src/redux/config/ReducerName";
-import AppReducer from "./src/redux/reducer/AppReducers";
+import { connect } from "react-redux";
+import Screenname from "../src/config/ScreenName";
+import HomeScreen from "../src/component/HomeScreen";
+import DetailScreen from "../src/component/DetailScreen";
+import colors from "../src/res/colors";
+import ReducerName from "../src/redux/config/ReducerName";
+import SalaryScreen from "../src/component/SalaryScreen";
 
 const AppNavigator = createStackNavigator({
-  [ScreenName.HomeScreen]: HomeScreen,
-  [ScreenName.DetailScreen]: DetailScreen
+  [Screenname.HomeScreen]: HomeScreen,
+  [Screenname.DetailScreen]: DetailScreen,
+  [Screenname.SalaryScreen]: SalaryScreen,
 });
 
 const AppContainer = createAppContainer(AppNavigator);
 
-const reducers = combineReducers({
-  [ReducerName.AppReducer]: AppReducer
-});
+interface Props {
+  showFloatButton: boolean;
+}
 
-const store = createStore(reducers);
+interface State {}
 
-export default class App extends React.Component {
+class App extends React.Component<Props, State> {
   render() {
     return (
-      <Provider store={store}>
-        <View style={{ flex: 1, backgroundColor: "#f3f3f3" }}>
-          <AppContainer />
-          {/* Rest of the app comes ABOVE the action button component !*/}
-          <ActionButton buttonColor="rgba(231,76,60,1)">
+      <View style={{ flex: 1, backgroundColor: "#f3f3f3" }}>
+        <AppContainer />
+        {/* Rest of the app comes ABOVE the action button component !*/}
+        {/* {this.props.showFloatButton && (
+          <ActionButton buttonColor={colors.colorMain}>
             <ActionButton.Item
               buttonColor="#9b59b6"
               title="Bảng lương"
@@ -75,11 +76,19 @@ export default class App extends React.Component {
               />
             </ActionButton.Item>
           </ActionButton>
-        </View>
-      </Provider>
+        )} */}
+      </View>
     );
   }
 }
+
+const mapStateToProps = state => {
+  return {
+    showFloatButton: state[ReducerName.AppReducer].showFloatButton
+  };
+};
+
+export default connect(mapStateToProps)(App);
 
 const styles = StyleSheet.create({
   scrollView: {

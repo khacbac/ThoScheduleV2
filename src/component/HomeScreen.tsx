@@ -17,6 +17,12 @@ import NavigationUtils, { Navigation } from "../utills/NavigationUtils";
 import { setDatas } from "../redux/action/AppAction";
 import ReducerName from "../redux/config/ReducerName";
 import { connect } from "react-redux";
+import colors from "../res/colors";
+import moment from "moment";
+import Utils from "../utills/Utils";
+import { AdvisoryType } from "../model/Advisory";
+import ConfigParam from "../config/ConfigParam";
+import string from "../res/string";
 
 interface Props {
   navigation: Navigation;
@@ -29,20 +35,19 @@ interface State {
   modalVisible: boolean;
 }
 
-enum AdvisoryType {
-  Persion = 0,
-  Family = 1
-}
-
-class DaySchedule {
+export class DaySchedule {
   // ten khach hang.
   public name: string;
   // mã khách hàng.
   public id: string;
   // ten nguoi giam ho.
   public protectorName: string;
+  // ngay tu van, dinh dang : Date.
+  public date: Date;
   // ngay tu van, dinh dang : yyyy-mm-dd.
-  public dateString: string;
+  // public dateString: string;
+  // gio tu van, dinh dang : hh:mm A.
+  public timeString: string;
   // loai tu van.
   public advisoryType: AdvisoryType = AdvisoryType.Persion;
   // số điện thoại.
@@ -68,29 +73,29 @@ class HomeScreen extends React.Component<Props, State> {
   }
 
   loadItems = day => {
+    console.log("BACHK_loadItems: ", day);
     // console.log("BACHK_loadItems_day: ", day);
     setTimeout(() => {
-      for (let i = -15; i < 85; i++) {
+      for (let i = -15; i < 80; i++) {
         const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-        const strTime = this.timeToString(time);
+        const strTime = Utils.formatDate(new Date(time));
         if (!this.props.datas[strTime]) {
           this.props.datas[strTime] = [];
-          const numItems = Math.floor(Math.random() * 5);
-          for (let j = 0; j < numItems; j++) {
-            // this.state.items[strTime].push({
-            //   name: "Item for " + strTime,
-            //   dateString: strTime,
-            //   key: strTime + "-" + j
-            //   // height: Math.max(50, Math.floor(Math.random() * 150))
-            // });
-            let ds = new DaySchedule();
-            ds.note = "Item for " + strTime;
-            ds.dateString = strTime;
-            ds.key = strTime + "-" + j;
-            ds.name = "Truong Thi Phuong Thao";
-            ds.protectorName = "Ho Khac Bac";
-            this.props.datas[strTime].push(ds);
-          }
+          // const numItems = Math.floor(Math.random() * 5);
+          // for (let j = 0; j < numItems; j++) {
+          //   let ds = new DaySchedule();
+          //   ds.note = "Item for " + strTime;
+          //   ds.date = new Date(time);
+          //   // ds.dateString = strTime;
+          //   ds.timeString = Utils.formatDate(ds.date, "hh:mm A");
+          //   ds.key = strTime + "-" + j;
+          //   ds.phoneNumber = "0389988534";
+          //   ds.name = "Truong Thi Phuong Thao";
+          //   ds.id = "ST1103";
+          //   ds.protectorName = "Ho Khac Bac";
+          //   ds.advisoryType = AdvisoryType.Persion;
+          //   this.props.datas[strTime].push(ds);
+          // }
         }
       }
       //console.log(this.state.items);
@@ -103,86 +108,189 @@ class HomeScreen extends React.Component<Props, State> {
       // });
       this.props.setDatas(newItems);
     }, 1000);
+
     // console.log(`Load Items for ${day.year}-${day.month}`);
   };
 
   renderItem = (item: DaySchedule) => {
-    // console.log("BACHK_renderItem: ", item);
+    let advisorys = ConfigParam.getAdvisorys();
+    let advisory = advisorys.find(i => {
+      return i.type == item.advisoryType;
+    });
+    let advisoryStr = advisory.label;
+
+    // let listDS = this.props.datas[Utils.formatDate(item.date)];
+    // let index = listDS.indexOf(item);
+
+    // console.log("BACHK_renderItem: ", listDS, " --- ", index);
+    return (
+      <View>
+        <TouchableOpacity
+          style={[styles.item]}
+          onPress={() => {
+            NavigationUtils.toDetailScreen(this.props.navigation, item);
+          }}
+        >
+          <View>
+            <View style={{ flexDirection: "row" }}>
+              <Text>Mã khách hàng: </Text>
+              <Text>{`${item.id}`}</Text>
+            </View>
+
+            <View style={{ flexDirection: "row", marginTop: 5 }}>
+              <Text>Tên khách hàng: </Text>
+              <Text>{`${item.name || string.str_dottype}`}</Text>
+            </View>
+
+            <View style={{ flexDirection: "row", marginTop: 5 }}>
+              <Text>Người giám hộ: </Text>
+              <Text>{`${item.protectorName || string.str_dottype}`}</Text>
+            </View>
+
+            <View style={{ flexDirection: "row", marginTop: 5 }}>
+              <Text>Giờ tư vấn: </Text>
+              <Text>{`${Utils.getTimeFormat(item.date)}`}</Text>
+            </View>
+
+            <View style={{ flexDirection: "row", marginTop: 5 }}>
+              <Text>Loại tư vấn: </Text>
+              <Text>{`${advisoryStr}`}</Text>
+            </View>
+
+            <View style={{ flexDirection: "row", marginTop: 5 }}>
+              <Text>Số điện thoại: </Text>
+              <Text>{`${item.phoneNumber || string.str_dottype}`}</Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+        {/* {index == listDS.length - 1 && this._renderAddButton(item.date)} */}
+      </View>
+    );
+  };
+
+  _renderAddButton = date => {
+    let ds = new DaySchedule();
+    ds.date = date;
+    return (
+      <View>
+        <TouchableOpacity
+          onPress={() => {
+            NavigationUtils.toDetailScreen(this.props.navigation, ds, true);
+          }}
+        >
+          <Text>adadaadadÏ</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  renderEmptyDate = day => {
+    let ds = new DaySchedule();
+    ds.date = new Date(day);
     return (
       <TouchableOpacity
-        style={[styles.item]}
+        style={styles.emptyDate}
         onPress={() => {
-          console.log("BACHK_onPress: ", item);
-          // this.setState({
-          //   modalVisible: true
-          // });
-          NavigationUtils.toDetailScreen(this.props.navigation);
+          NavigationUtils.toDetailScreen(this.props.navigation, ds, true);
         }}
       >
-        <View>
-          <View style={{ flexDirection: "row" }}>
-            <Text>Mã khách hàng: </Text>
-            <Text>{`${item.name}`}</Text>
-          </View>
-
-          <View style={{ flexDirection: "row", marginTop: 5 }}>
-            <Text>Tên khách hàng: </Text>
-            <Text>{`${item.name}`}</Text>
-          </View>
-
-          <View style={{ flexDirection: "row", marginTop: 5 }}>
-            <Text>Người giám hộ: </Text>
-            <Text>{`${item.protectorName}`}</Text>
-          </View>
-
-          <View style={{ flexDirection: "row", marginTop: 5 }}>
-            <Text>Giờ tư vấn: </Text>
-            <Text>{`${item.protectorName}`}</Text>
-          </View>
-
-          <View style={{ flexDirection: "row", marginTop: 5 }}>
-            <Text>Loại tư vấn: </Text>
-            <Text>{`${item.protectorName}`}</Text>
-          </View>
-
-          <View style={{ flexDirection: "row", marginTop: 5 }}>
-            <Text>Số điện thoại: </Text>
-            <Text>0389988534</Text>
-          </View>
-        </View>
+        <Text>I'm buzy!</Text>
       </TouchableOpacity>
     );
   };
 
-  renderEmptyDate = () => {
-    return (
-      <TouchableOpacity style={styles.emptyDate}>
-        <Text>This is empty date!</Text>
-      </TouchableOpacity>
-    );
+  rowHasChanged = (r1: DaySchedule, r2: DaySchedule) => {
+    if (
+      r1.name != r2.name ||
+      r1.id != r2.id ||
+      r1.protectorName != r2.protectorName ||
+      r1.date != r2.date ||
+      new Date(r1.date).getTime() != new Date(r2.date).getTime() ||
+      r1.timeString != r2.timeString ||
+      r1.advisoryType != r2.advisoryType ||
+      r1.note != r2.note ||
+      r1.phoneNumber != r2.phoneNumber
+    ) {
+      return true;
+    }
+    return false;
   };
 
-  rowHasChanged = (r1, r2) => {
-    return r1.name !== r2.name;
-  };
-
-  timeToString = time => {
-    const date = new Date(time);
-    return date.toISOString().split("T")[0];
-  };
+  // dateToString = time => {
+  //   // const date = new Date(time);
+  //   // return date.toISOString().split("T")[0];
+  //   return Utils.formatDate(new Date(time));
+  // };
 
   render() {
-    // console.log("BACHK_Item_Datas: ", this.props.datas);
+    const dotColor = {
+      color: colors.colorMain
+    };
+    let workedKeys = Object.keys(this.props.datas);
+    var markedDates = {};
+    workedKeys.forEach(item => {
+      if (this.props.datas[item] && this.props.datas[item].length > 0) {
+        markedDates = {
+          ...markedDates,
+          [item]: {
+            dots: [dotColor],
+            selected: true,
+            selectedColor: colors.colorMain
+          }
+        };
+      }
+    });
+    console.log("BACHK_workedKeys: ", workedKeys);
+
+    // var markedDates = workedKeys.reduce(
+    //   (c, v) =>
+    //     Object.assign(c, {
+    //       [v]: {
+    //         dots: [dotColor],
+    //         selected: true,
+    //         selectedColor: colors.colorMain
+    //       }
+    //     }),
+    //   {}
+    // );
     return (
       <View style={{ flex: 1 }}>
         <Agenda
           items={this.props.datas}
           loadItemsForMonth={this.loadItems}
-          selected={this.timeToString(Date.now())}
+          selected={Utils.formatDate(new Date())}
           renderItem={this.renderItem}
           renderEmptyDate={this.renderEmptyDate}
           rowHasChanged={this.rowHasChanged}
+          // markedDates={{
+          //   "2019-07-13": {
+          //     dots: [dotColor],
+          //     selected: true,
+          //     selectedColor: colors.colorMain
+          //   }
+          // }}
+          markedDates={markedDates}
+          markingType="multi-dot"
         />
+
+        <ActionButton buttonColor={colors.colorMain}>
+          <ActionButton.Item
+            buttonColor={colors.colorSub}
+            title="Bảng lương"
+            onPress={() =>
+              NavigationUtils.toSalaryScreen(this.props.navigation)
+            }
+          >
+            <Icon name="md-create" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item
+            buttonColor={colors.colorSub}
+            title="Cài đặt"
+            onPress={() => {}}
+          >
+            <Icon name="md-notifications-off" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+        </ActionButton>
       </View>
     );
   }

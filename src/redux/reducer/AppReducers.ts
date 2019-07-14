@@ -1,8 +1,8 @@
 import { AppActionType } from "../action/AppAction";
 
 let defaultState = {
-  testNum: 0,
-  items: null
+  showFloatButton: true,
+  datas: {}
 };
 
 const AppReducer = (
@@ -10,12 +10,14 @@ const AppReducer = (
   action: {
     type: string;
     datas: any;
+    showFloatButton: boolean;
   }
 ) => {
   switch (action.type) {
     case AppActionType.SET_DATAS:
-      console.log("BACHK_AppReducer");
-      return { ...state, items: action.datas };
+      return { ...state, datas: { ...action.datas } };
+    case AppActionType.VISIBILITY_FLOAT_BUTTON:
+      return { ...state, showFloatButton: action.showFloatButton };
     default:
       return state;
   }

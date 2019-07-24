@@ -1,7 +1,8 @@
 const Screenname = {
   HomeScreen: "HomeScreen",
   DetailScreen: "DetailScreen",
-  SalaryScreen: "SalaryScreen"
+  SalaryScreen: "SalaryScreen",
+  SheduleListScreen: "SheduleListScreen",
 };
 
 export default Screenname;

@@ -35,11 +35,13 @@ import DetailScreen from "../src/component/DetailScreen";
 import colors from "../src/res/colors";
 import ReducerName from "../src/redux/config/ReducerName";
 import SalaryScreen from "../src/component/SalaryScreen";
+import ScheduleList from "../src/component/ScheduleList";
 
 const AppNavigator = createStackNavigator({
   [Screenname.HomeScreen]: HomeScreen,
   [Screenname.DetailScreen]: DetailScreen,
   [Screenname.SalaryScreen]: SalaryScreen,
+  [Screenname.SheduleListScreen]: ScheduleList
 });
 
 const AppContainer = createAppContainer(AppNavigator);

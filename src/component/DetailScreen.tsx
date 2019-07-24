@@ -8,11 +8,11 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
-  TouchableOpacity
+  TouchableOpacity,
+  SafeAreaView
 } from "react-native";
 import { connect } from "react-redux";
 import ReducerName from "../redux/config/ReducerName";
-import { DaySchedule } from "./HomeScreen";
 import NavigationUtils, {
   NavigationParamKey,
   Navigation
@@ -24,9 +24,11 @@ import moment from "moment";
 import Utils from "../utills/Utils";
 import Advisory, { AdvisoryType } from "../model/Advisory";
 import ConfigParam from "../config/ConfigParam";
+import DaySchedule from "../model/DaySchedule";
+import CalendarDay from "../model/CalendarDay";
 
 interface Props {
-  datas: any;
+  // datas: any;
   navigation: Navigation<any>;
   setDatas: (datas: any) => void;
 }
@@ -35,26 +37,18 @@ interface State {
   daySchedule: DaySchedule;
 }
 
-// const radioDatas = [
-//   {
-//     label: "Cá nhân",
-//     color: colors.colorSub,
-//     size: 22,
-//     selected: true,
-//     layout: "row",
-//     type: AdvisoryType.Persion
-//   },
-//   {
-//     label: "Gia đình",
-//     color: colors.colorSub,
-//     size: 22,
-//     selected: false,
-//     layout: "row",
-//     type: AdvisoryType.Family
-//   }
-// ];
-
 class DetailScreen extends React.Component<Props, State> {
+  static navigationOptions = ({ navigation }) => {
+    let ds: DaySchedule = NavigationUtils.getParam<DaySchedule>(
+      navigation,
+      NavigationParamKey.DaySchedule,
+      null
+    );
+    return {
+      title: Utils.formatDateFromTimestamp(ds.date.timestamp)
+    };
+  };
+
   private daySchedule: DaySchedule;
 
   private daySchedules: Array<DaySchedule>;
@@ -75,18 +69,20 @@ class DetailScreen extends React.Component<Props, State> {
       false
     );
 
-    let ds = this.daySchedule;
-    if (!this.isAdd) {
-      this.daySchedules =
-        this.props.datas[Utils.formatDate(this.daySchedule.date)] || [];
+    // let ds = this.daySchedule;
+    // if (!this.isAdd) {
+    //   this.daySchedules =
+    //     this.props.datas[
+    //       Utils.formatDate(new Date(this.daySchedule.date.timestamp))
+    //     ] || [];
 
-      ds = this.daySchedules.find(i => {
-        return i.key == this.daySchedule.key;
-      });
-    }
+    //   ds = this.daySchedules.find(i => {
+    //     return i.key == this.daySchedule.key;
+    //   });
+    // }
 
     this.state = {
-      daySchedule: ds
+      daySchedule: this.daySchedule
     };
   }
 
@@ -150,7 +146,7 @@ class DetailScreen extends React.Component<Props, State> {
         <Text style={styles.headerText}>Giờ tư vấn</Text>
         <DatePicker
           style={{ width: 200, marginTop: 5 }}
-          date={day.date}
+          date={new Date(day.date.timestamp)}
           mode="time"
           placeholder="Giờ tư vấn"
           format="hh:mm A"
@@ -172,15 +168,17 @@ class DetailScreen extends React.Component<Props, State> {
             // ... You can check the source to find the other keys.
           }}
           onDateChange={time => {
+            let calendarDay: CalendarDay = day.date;
+            calendarDay.timestamp =
+              moment(
+                `${Utils.formatDateFromTimestamp(day.date.timestamp)} ${time}`,
+                "YYYY-MM-DD hh:mm A"
+              ).unix() * 1000;
+
             this.setState({
               daySchedule: {
                 ...day,
-                date: new Date(
-                  moment(
-                    `${Utils.formatDate(day.date)} ${time}`,
-                    "YYYY-MM-DD hh:mm A"
-                  ).unix() * 1000
-                )
+                date: calendarDay
               }
             });
           }}
@@ -309,83 +307,86 @@ class DetailScreen extends React.Component<Props, State> {
 
   // Thực hiện thêm mới.
   private _handleAdd = (): void => {
-    Alert.alert("", "Xác nhận thêm lịch ?", [
-      {
-        text: "OK",
-        onPress: () => {
-          const time = this.state.daySchedule.date.getTime();
-          const strTime = Utils.formatDate(new Date(time));
-          let datas = this.props.datas;
-          if (!datas[strTime]) {
-            datas[strTime] = [];
-          }
-          const nextCount = datas[strTime].length;
-          let ds = new DaySchedule();
-          ds.note = "Item for " + strTime;
-          ds.date = this.state.daySchedule.date;
-          ds.timeString = Utils.formatDate(ds.date, "hh:mm A");
-          ds.key = strTime + "-" + nextCount;
-          ds.phoneNumber = this.state.daySchedule.phoneNumber;
-          ds.name = this.state.daySchedule.name;
-          ds.id = this.state.daySchedule.id;
-          ds.protectorName = this.state.daySchedule.protectorName;
-          ds.advisoryType = this.state.daySchedule.advisoryType;
-          datas[strTime].push(ds);
-          this.props.setDatas(datas);
-          NavigationUtils.goBack(this.props.navigation);
-        }
-      }
-    ]);
+    // Alert.alert("", "Xác nhận thêm lịch ?", [
+    //   {
+    //     text: "OK",
+    //     onPress: () => {
+    //       const time = this.state.daySchedule.date.timestamp;
+    //       const strTime = Utils.formatDate(new Date(time));
+    //       let datas = this.props.datas;
+    //       if (!datas[strTime]) {
+    //         datas[strTime] = [];
+    //       }
+    //       const nextCount = datas[strTime].length;
+    //       let ds = new DaySchedule();
+    //       ds.note = "Item for " + strTime;
+    //       ds.date = this.state.daySchedule.date;
+    //       ds.timeString = Utils.formatDateFromTimestamp(
+    //         ds.date.timestamp,
+    //         "hh:mm A"
+    //       );
+    //       ds.key = strTime + "-" + nextCount;
+    //       ds.phoneNumber = this.state.daySchedule.phoneNumber;
+    //       ds.name = this.state.daySchedule.name;
+    //       ds.id = this.state.daySchedule.id;
+    //       ds.protectorName = this.state.daySchedule.protectorName;
+    //       ds.advisoryType = this.state.daySchedule.advisoryType;
+    //       datas[strTime].push(ds);
+    //       this.props.setDatas(datas);
+    //       NavigationUtils.goBack(this.props.navigation);
+    //     }
+    //   }
+    // ]);
   };
 
   // Thực hiện cập nhật thông tin.
   private _handleEdit = (): void => {
-    Alert.alert("", "Bạn chắc chắn muốn sửa lịch ?", [
-      {
-        text: "OK",
-        onPress: () => {
-          this.daySchedules = this.daySchedules.map(i => {
-            if (i.key == this.state.daySchedule.key) {
-              return this.state.daySchedule;
-            }
-            return i;
-          });
-          // update datas.
-          let datas = {
-            ...this.props.datas,
-            [Utils.formatDate(this.daySchedule.date)]: this.daySchedules
-          };
-          this.props.setDatas(datas);
-          NavigationUtils.goBack(this.props.navigation);
-        }
-      }
-    ]);
+    // Alert.alert("", "Bạn chắc chắn muốn sửa lịch ?", [
+    //   {
+    //     text: "OK",
+    //     onPress: () => {
+    //       this.daySchedules = this.daySchedules.map(i => {
+    //         if (i.key == this.state.daySchedule.key) {
+    //           return this.state.daySchedule;
+    //         }
+    //         return i;
+    //       });
+    //       // update datas.
+    //       let datas = {
+    //         ...this.props.datas,
+    //         [Utils.formatDate(this.daySchedule.date)]: this.daySchedules
+    //       };
+    //       this.props.setDatas(datas);
+    //       NavigationUtils.goBack(this.props.navigation);
+    //     }
+    //   }
+    // ]);
   };
 
   // Thực hiện xoá lịch.
   private _handleDelete = (): void => {
-    Alert.alert("", "Bạn chắc chắn muốn xoá lịch ?", [
-      {
-        text: "OK",
-        onPress: () => {
-          this.daySchedules = this.daySchedules.filter(i => {
-            return i.key != this.state.daySchedule.key;
-          });
-          // update datas.
-          let datas = {
-            ...this.props.datas,
-            [Utils.formatDate(this.daySchedule.date)]: this.daySchedules
-          };
-          this.props.setDatas(datas);
-          NavigationUtils.goBack(this.props.navigation);
-        }
-      }
-    ]);
+    // Alert.alert("", "Bạn chắc chắn muốn xoá lịch ?", [
+    //   {
+    //     text: "OK",
+    //     onPress: () => {
+    //       this.daySchedules = this.daySchedules.filter(i => {
+    //         return i.key != this.state.daySchedule.key;
+    //       });
+    //       // update datas.
+    //       let datas = {
+    //         ...this.props.datas,
+    //         [Utils.formatDate(this.daySchedule.date)]: this.daySchedules
+    //       };
+    //       this.props.setDatas(datas);
+    //       NavigationUtils.goBack(this.props.navigation);
+    //     }
+    //   }
+    // ]);
   };
 
   render() {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.colorGrayBG }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.colorGrayBG }}>
         <View style={{ flex: 1 }}>
           <ScrollView>
             {this._renderCustomerID(this.state.daySchedule)}
@@ -399,7 +400,7 @@ class DetailScreen extends React.Component<Props, State> {
 
         {/* action button */}
         {this._renderActionButton()}
-      </View>
+      </SafeAreaView>
     );
   }
 }

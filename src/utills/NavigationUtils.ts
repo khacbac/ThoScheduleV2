@@ -1,5 +1,6 @@
 import Screenname from "../config/ScreenName";
-import { DaySchedule } from "../component/HomeScreen";
+import CalendarDay from "../model/CalendarDay";
+import DaySchedule from "../model/DaySchedule";
 
 export class Navigation<T = void> {
   public navigate: (name: string, param?: any) => void;
@@ -24,6 +25,13 @@ export default class NavigationUtils {
     navigation.navigate(Screenname.SalaryScreen, {});
   }
 
+  // sang man hinh danh sach cong viec trong ngay.
+  public static toScheduleList(navigation: Navigation, day: CalendarDay) {
+    navigation.navigate(Screenname.SheduleListScreen, {
+      [NavigationParamKey.CalendarDay]: day
+    });
+  }
+
   public static getParam<T>(
     navigation: Navigation<T>,
     key: string,
@@ -40,6 +48,7 @@ export default class NavigationUtils {
 class NavigationParamKey {
   public static DaySchedule: string = "DayScheduleKey";
   public static IsAdd: string = "IsAddKey";
+  public static CalendarDay: string = "CalendarDayKey";
 }
 
 export { NavigationParamKey };

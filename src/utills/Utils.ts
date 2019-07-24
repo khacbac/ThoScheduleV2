@@ -5,6 +5,13 @@ export default class Utils {
     return moment(date).format(format);
   }
 
+  public static formatDateFromTimestamp(
+    time: number,
+    format: string = "YYYY-MM-DD"
+  ): string {
+    return moment(new Date(time)).format(format);
+  }
+
   public static getTimeFormat(date: Date, format: string = "hh:mm A"): string {
     return moment(date).format(format);
   }

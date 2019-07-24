@@ -29,6 +29,12 @@ target 'ThoSchedule' do
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
   
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+  
+  pod 'Firebase/Analytics'
+  pod 'Firebase/Core'
+  pod 'Firebase/Auth'
+  pod 'Firebase/Database'
+  pod 'RNFirebase', :path => '../node_modules/react-native-firebase/ios'
 
   target 'ThoScheduleTests' do
     inherit! :search_paths

@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <Firebase.h>
+
 #import "AppDelegate.h"
 
 #import <React/RCTBridge.h>
@@ -16,6 +18,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+  [FIRApp configure];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                    moduleName:@"ThoSchedule"
                                             initialProperties:nil];

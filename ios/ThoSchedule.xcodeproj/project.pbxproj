@@ -19,6 +19,7 @@
 		2DCD954D1E0B4F2C00145EB5 /* ThoScheduleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ThoScheduleTests.m */; };
 		61F3B1C7AD326FDB291A262D /* libPods-ThoSchedule-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ACAC3138F615631B56BEDEC0 /* libPods-ThoSchedule-tvOSTests.a */; };
 		64C34B41AB0DB7142D06B6B6 /* libPods-ThoScheduleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EE5EF6277AD925AB9981FF5A /* libPods-ThoScheduleTests.a */; };
+		84C5309022E8665200752A67 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 84C5308F22E8665200752A67 /* GoogleService-Info.plist */; };
 		AC4D3225DFDAC7BDFA9A4781 /* libPods-ThoSchedule.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4033BAC415FE43C9FA3CBA8A /* libPods-ThoSchedule.a */; };
 /* End PBXBuildFile section */
 
@@ -60,6 +61,7 @@
 		65081006AD30F537463929C9 /* Pods-ThoSchedule-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ThoSchedule-tvOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ThoSchedule-tvOSTests/Pods-ThoSchedule-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		74E1570C00300DC2DB01E1AC /* libPods-ThoSchedule-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ThoSchedule-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		818D27EE6A0BA59332C96FB1 /* Pods-ThoSchedule.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ThoSchedule.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ThoSchedule/Pods-ThoSchedule.debug.xcconfig"; sourceTree = "<group>"; };
+		84C5308F22E8665200752A67 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "ThoSchedule/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8E9C1CE8A98307094A9B62E6 /* Pods-ThoSchedule-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ThoSchedule-tvOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ThoSchedule-tvOSTests/Pods-ThoSchedule-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		A04604A37CE891CCB3FBE10E /* Pods-ThoScheduleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ThoScheduleTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ThoScheduleTests/Pods-ThoScheduleTests.release.xcconfig"; sourceTree = "<group>"; };
 		ACAC3138F615631B56BEDEC0 /* libPods-ThoSchedule-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ThoSchedule-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,6 +127,7 @@
 		13B07FAE1A68108700A75B9A /* ThoSchedule */ = {
 			isa = PBXGroup;
 			children = (
+				84C5308F22E8665200752A67 /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -308,6 +311,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -338,6 +342,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				84C5309022E8665200752A67 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -659,7 +664,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.bachk.ThoSchedule;
 				PRODUCT_NAME = ThoSchedule;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -678,7 +683,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.bachk.ThoSchedule;
 				PRODUCT_NAME = ThoSchedule;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

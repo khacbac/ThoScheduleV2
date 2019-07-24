@@ -26,6 +26,7 @@ import Advisory, { AdvisoryType } from "../model/Advisory";
 import ConfigParam from "../config/ConfigParam";
 import DaySchedule from "../model/DaySchedule";
 import CalendarDay from "../model/CalendarDay";
+import firebase from "react-native-firebase";
 
 interface Props {
   // datas: any;
@@ -178,7 +179,11 @@ class DetailScreen extends React.Component<Props, State> {
             this.setState({
               daySchedule: {
                 ...day,
-                date: calendarDay
+                date: calendarDay,
+                timeString: Utils.formatDateFromTimestamp(
+                  day.date.timestamp,
+                  "hh:mm A"
+                )
               }
             });
           }}
@@ -270,10 +275,10 @@ class DetailScreen extends React.Component<Props, State> {
             backgroundColor: colors.colorMain
           }}
           onPress={() => {
-            if (!this.state.daySchedule.id) {
-              Alert.alert("", "Bạn chưa nhập mã khách hàng!");
-              return;
-            }
+            // if (!this.state.daySchedule.id) {
+            //   Alert.alert("", "Bạn chưa nhập mã khách hàng!");
+            //   return;
+            // }
             this.isAdd ? this._handleAdd() : this._handleEdit();
           }}
         >
@@ -306,37 +311,46 @@ class DetailScreen extends React.Component<Props, State> {
   };
 
   // Thực hiện thêm mới.
-  private _handleAdd = (): void => {
-    // Alert.alert("", "Xác nhận thêm lịch ?", [
-    //   {
-    //     text: "OK",
-    //     onPress: () => {
-    //       const time = this.state.daySchedule.date.timestamp;
-    //       const strTime = Utils.formatDate(new Date(time));
-    //       let datas = this.props.datas;
-    //       if (!datas[strTime]) {
-    //         datas[strTime] = [];
-    //       }
-    //       const nextCount = datas[strTime].length;
-    //       let ds = new DaySchedule();
-    //       ds.note = "Item for " + strTime;
-    //       ds.date = this.state.daySchedule.date;
-    //       ds.timeString = Utils.formatDateFromTimestamp(
-    //         ds.date.timestamp,
-    //         "hh:mm A"
-    //       );
-    //       ds.key = strTime + "-" + nextCount;
-    //       ds.phoneNumber = this.state.daySchedule.phoneNumber;
-    //       ds.name = this.state.daySchedule.name;
-    //       ds.id = this.state.daySchedule.id;
-    //       ds.protectorName = this.state.daySchedule.protectorName;
-    //       ds.advisoryType = this.state.daySchedule.advisoryType;
-    //       datas[strTime].push(ds);
-    //       this.props.setDatas(datas);
-    //       NavigationUtils.goBack(this.props.navigation);
-    //     }
-    //   }
-    // ]);
+  private _handleAdd = async () => {
+    // let user = await firebase
+    //   .auth()
+    //   .signInWithEmailAndPassword("hokhacbac@gmail.com", "123456");
+
+    Alert.alert("", "Xác nhận thêm lịch ?", [
+      {
+        text: "OK",
+        onPress: () => {
+          // const time = this.state.daySchedule.date.timestamp;
+          // const strTime = Utils.formatDate(new Date(time));
+          // let datas = this.props.datas;
+          // if (!datas[strTime]) {
+          //   datas[strTime] = [];
+          // }
+          // const nextCount = datas[strTime].length;
+          // let ds = new DaySchedule();
+          // ds.note = "Item for " + strTime;
+          // ds.date = this.state.daySchedule.date;
+          // ds.timeString = Utils.formatDateFromTimestamp(
+          //   ds.date.timestamp,
+          //   "hh:mm A"
+          // );
+          // ds.key = strTime + "-" + nextCount;
+          // ds.phoneNumber = this.state.daySchedule.phoneNumber;
+          // ds.name = this.state.daySchedule.name;
+          // ds.id = this.state.daySchedule.id;
+          // ds.protectorName = this.state.daySchedule.protectorName;
+          // ds.advisoryType = this.state.daySchedule.advisoryType;
+          // datas[strTime].push(ds);
+          // this.props.setDatas(datas);
+          let dbRef = firebase.database().ref();
+          let child = dbRef.child(
+            Utils.formatDateFromTimestamp(this.daySchedule.date.timestamp)
+          );
+          child.push(this.state.daySchedule);
+          NavigationUtils.goBack(this.props.navigation);
+        }
+      }
+    ]);
   };
 
   // Thực hiện cập nhật thông tin.

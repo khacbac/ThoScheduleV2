@@ -19,6 +19,7 @@ import NavigationUtils, {
 } from "../utills/NavigationUtils";
 import CalendarDay from "../model/CalendarDay";
 import colors from "../res/colors";
+import Utils from "../utills/Utils";
 
 interface Props {
   navigation: Navigation<any>;
@@ -167,6 +168,7 @@ class ScheduleListScreen extends React.Component<Props, State> {
           onPress={() => {
             let day: DaySchedule = new DaySchedule();
             day.date = this.calendarDay;
+            day.timeString = Utils.formatDateFromTimestamp(day.date.timestamp,"hh:mm A");
             NavigationUtils.toDetailScreen(this.props.navigation, day, true);
           }}
         >

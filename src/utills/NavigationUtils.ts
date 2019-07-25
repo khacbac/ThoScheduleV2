@@ -25,6 +25,16 @@ export default class NavigationUtils {
     navigation.navigate(Screenname.SalaryScreen, {});
   }
 
+  // sang man hinh xem bang luong.
+  public static toSalaryForMonthScreen(
+    navigation: Navigation,
+    cd: CalendarDay
+  ) {
+    navigation.navigate(Screenname.SalaryForMonthScreen, {
+      [NavigationParamKey.SalaryCalendarDay]: cd
+    });
+  }
+
   // sang man hinh danh sach cong viec trong ngay.
   public static toScheduleList(navigation: Navigation, day: CalendarDay) {
     navigation.navigate(Screenname.SheduleListScreen, {
@@ -49,6 +59,7 @@ class NavigationParamKey {
   public static DaySchedule: string = "DayScheduleKey";
   public static IsAdd: string = "IsAddKey";
   public static CalendarDay: string = "CalendarDayKey";
+  public static SalaryCalendarDay: string = "SalaryCalendarDay";
 }
 
 export { NavigationParamKey };

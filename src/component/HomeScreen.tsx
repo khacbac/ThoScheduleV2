@@ -66,6 +66,13 @@ export class DaySchedule {
 }
 
 class HomeScreen extends React.Component<Props, State> {
+
+  static navigationOptions = ({ navigation }) => {
+    return {
+      title: "Thỏ Schedule"
+    };
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -74,207 +81,9 @@ class HomeScreen extends React.Component<Props, State> {
     };
   }
 
-  // loadItems = day => {
-  //   console.log("BACHK_loadItems: ", day);
-  //   // console.log("BACHK_loadItems_day: ", day);
-  //   setTimeout(() => {
-  //     for (let i = -15; i < 80; i++) {
-  //       const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-  //       const strTime = Utils.formatDate(new Date(time));
-  //       if (!this.props.datas[strTime]) {
-  //         this.props.datas[strTime] = [];
-  //         // const numItems = Math.floor(Math.random() * 5);
-  //         // for (let j = 0; j < numItems; j++) {
-  //         //   let ds = new DaySchedule();
-  //         //   ds.note = "Item for " + strTime;
-  //         //   ds.date = new Date(time);
-  //         //   // ds.dateString = strTime;
-  //         //   ds.timeString = Utils.formatDate(ds.date, "hh:mm A");
-  //         //   ds.key = strTime + "-" + j;
-  //         //   ds.phoneNumber = "0389988534";
-  //         //   ds.name = "Truong Thi Phuong Thao";
-  //         //   ds.id = "ST1103";
-  //         //   ds.protectorName = "Ho Khac Bac";
-  //         //   ds.advisoryType = AdvisoryType.Persion;
-  //         //   this.props.datas[strTime].push(ds);
-  //         // }
-  //       }
-  //     }
-  //     //console.log(this.state.items);
-  //     const newItems = {};
-  //     Object.keys(this.props.datas).forEach(key => {
-  //       newItems[key] = this.props.datas[key];
-  //     });
-  //     // this.setState({
-  //     //   items: newItems
-  //     // });
-  //     this.props.setDatas(newItems);
-  //   }, 1000);
-
-  //   // console.log(`Load Items for ${day.year}-${day.month}`);
-  // };
-
-  // renderItem = (item: DaySchedule) => {
-  //   let advisorys = ConfigParam.getAdvisorys();
-  //   let advisory = advisorys.find(i => {
-  //     return i.type == item.advisoryType;
-  //   });
-  //   let advisoryStr = advisory.label;
-
-  //   // let listDS = this.props.datas[Utils.formatDate(item.date)];
-  //   // let index = listDS.indexOf(item);
-
-  //   // console.log("BACHK_renderItem: ", listDS, " --- ", index);
-  //   return (
-  //     <View>
-  //       <TouchableOpacity
-  //         style={[styles.item]}
-  //         onPress={() => {
-  //           NavigationUtils.toDetailScreen(this.props.navigation, item);
-  //         }}
-  //       >
-  //         <View>
-  //           <View style={{ flexDirection: "row" }}>
-  //             <Text>Mã khách hàng: </Text>
-  //             <Text>{`${item.id}`}</Text>
-  //           </View>
-
-  //           <View style={{ flexDirection: "row", marginTop: 5 }}>
-  //             <Text>Tên khách hàng: </Text>
-  //             <Text>{`${item.name || string.str_dottype}`}</Text>
-  //           </View>
-
-  //           <View style={{ flexDirection: "row", marginTop: 5 }}>
-  //             <Text>Người giám hộ: </Text>
-  //             <Text>{`${item.protectorName || string.str_dottype}`}</Text>
-  //           </View>
-
-  //           <View style={{ flexDirection: "row", marginTop: 5 }}>
-  //             <Text>Giờ tư vấn: </Text>
-  //             <Text>{`${Utils.getTimeFormat(item.date)}`}</Text>
-  //           </View>
-
-  //           <View style={{ flexDirection: "row", marginTop: 5 }}>
-  //             <Text>Loại tư vấn: </Text>
-  //             <Text>{`${advisoryStr}`}</Text>
-  //           </View>
-
-  //           <View style={{ flexDirection: "row", marginTop: 5 }}>
-  //             <Text>Số điện thoại: </Text>
-  //             <Text>{`${item.phoneNumber || string.str_dottype}`}</Text>
-  //           </View>
-  //         </View>
-  //       </TouchableOpacity>
-  //       {/* {index == listDS.length - 1 && this._renderAddButton(item.date)} */}
-  //     </View>
-  //   );
-  // };
-
-  // _renderAddButton = date => {
-  //   let ds = new DaySchedule();
-  //   ds.date = date;
-  //   return (
-  //     <View>
-  //       <TouchableOpacity
-  //         onPress={() => {
-  //           NavigationUtils.toDetailScreen(this.props.navigation, ds, true);
-  //         }}
-  //       >
-  //         <Text>adadaadadÏ</Text>
-  //       </TouchableOpacity>
-  //     </View>
-  //   );
-  // };
-
-  // renderEmptyDate = day => {
-  //   let ds = new DaySchedule();
-  //   ds.date = new Date(day);
-  //   return (
-  //     <TouchableOpacity
-  //       style={styles.emptyDate}
-  //       onPress={() => {
-  //         NavigationUtils.toDetailScreen(this.props.navigation, ds, true);
-  //       }}
-  //     >
-  //       <Text>I'm buzy!</Text>
-  //     </TouchableOpacity>
-  //   );
-  // };
-
-  // rowHasChanged = (r1: DaySchedule, r2: DaySchedule) => {
-  //   if (
-  //     r1.name != r2.name ||
-  //     r1.id != r2.id ||
-  //     r1.protectorName != r2.protectorName ||
-  //     r1.date != r2.date ||
-  //     new Date(r1.date).getTime() != new Date(r2.date).getTime() ||
-  //     r1.timeString != r2.timeString ||
-  //     r1.advisoryType != r2.advisoryType ||
-  //     r1.note != r2.note ||
-  //     r1.phoneNumber != r2.phoneNumber
-  //   ) {
-  //     return true;
-  //   }
-  //   return false;
-  // };
-
-  // dateToString = time => {
-  //   // const date = new Date(time);
-  //   // return date.toISOString().split("T")[0];
-  //   return Utils.formatDate(new Date(time));
-  // };
-
   render() {
-    // const dotColor = {
-    //   color: colors.colorMain
-    // };
-    // let workedKeys = Object.keys(this.props.datas);
-    // var markedDates = {};
-    // workedKeys.forEach(item => {
-    //   if (this.props.datas[item] && this.props.datas[item].length > 0) {
-    //     markedDates = {
-    //       ...markedDates,
-    //       [item]: {
-    //         dots: [dotColor],
-    //         selected: true,
-    //         selectedColor: colors.colorMain
-    //       }
-    //     };
-    //   }
-    // });
-    // console.log("BACHK_workedKeys: ", workedKeys);
-
-    // var markedDates = workedKeys.reduce(
-    //   (c, v) =>
-    //     Object.assign(c, {
-    //       [v]: {
-    //         dots: [dotColor],
-    //         selected: true,
-    //         selectedColor: colors.colorMain
-    //       }
-    //     }),
-    //   {}
-    // );
     return (
       <View style={{ flex: 1 }}>
-        {/* <Agenda
-          items={this.props.datas}
-          loadItemsForMonth={this.loadItems}
-          selected={Utils.formatDate(new Date())}
-          renderItem={this.renderItem}
-          renderEmptyDate={this.renderEmptyDate}
-          rowHasChanged={this.rowHasChanged}
-          // markedDates={{
-          //   "2019-07-13": {
-          //     dots: [dotColor],
-          //     selected: true,
-          //     selectedColor: colors.colorMain
-          //   }
-          // }}
-          markedDates={markedDates}
-          markingType="multi-dot"
-        /> */}
-
         <Calendar
           // Initially visible month. Default = Date()
           current={Utils.formatDate(new Date())}
@@ -312,10 +121,6 @@ class HomeScreen extends React.Component<Props, State> {
           hideDayNames={false}
           // Show week numbers to the left. Default = false
           showWeekNumbers={true}
-          // Handler which gets executed when press arrow icon left. It receive a callback can go back month
-          // onPressArrowLeft={substractMonth => substractMonth()}
-          // Handler which gets executed when press arrow icon left. It receive a callback can go next month
-          // onPressArrowRight={addMonth => addMonth()}
         />
 
         <ActionButton buttonColor={colors.colorMain}>

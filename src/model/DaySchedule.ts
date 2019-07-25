@@ -4,6 +4,8 @@ import CalendarDay from "./CalendarDay";
 export default class DaySchedule {
   // ten khach hang.
   public name: string;
+  // nam sinh khach hang.
+  public dateOfBirth: string;
   // mã khách hàng.
   public id: string;
   // ten nguoi giam ho.
@@ -24,7 +26,7 @@ export default class DaySchedule {
   // mo ta them.
   public note: string;
   // unique key for item.
-  public key: string;
+  public databaseKey: string;
 
   constructor() {
     this.advisoryType = AdvisoryType.Persion;

@@ -17,7 +17,12 @@ import NavigationUtils, {
   NavigationParamKey,
   Navigation
 } from "../utills/NavigationUtils";
-import { setDatas } from "../redux/action/AppAction";
+import {
+  setDatas,
+  addDaySchedule,
+  deleteDaySchedule,
+  updateDaySchedule
+} from "../redux/action/AppAction";
 import RadioGroup from "react-native-radio-buttons-group";
 import DatePicker from "react-native-datepicker";
 import moment from "moment";
@@ -27,11 +32,14 @@ import ConfigParam from "../config/ConfigParam";
 import DaySchedule from "../model/DaySchedule";
 import CalendarDay from "../model/CalendarDay";
 import firebase from "react-native-firebase";
+import { Reference } from "react-native-firebase/database";
 
 interface Props {
   // datas: any;
   navigation: Navigation<any>;
-  setDatas: (datas: any) => void;
+  addDayschedule: (ds: DaySchedule) => void;
+  deleteDaySchedule: (ds: DaySchedule) => void;
+  updateDaySchedule: (oldDs: DaySchedule, ds: DaySchedule) => void;
 }
 
 interface State {
@@ -56,6 +64,8 @@ class DetailScreen extends React.Component<Props, State> {
 
   private isAdd: boolean = false;
 
+  private databaseRef: Reference;
+
   constructor(props) {
     super(props);
     // get from navigation.
@@ -70,21 +80,28 @@ class DetailScreen extends React.Component<Props, State> {
       false
     );
 
-    // let ds = this.daySchedule;
-    // if (!this.isAdd) {
-    //   this.daySchedules =
-    //     this.props.datas[
-    //       Utils.formatDate(new Date(this.daySchedule.date.timestamp))
-    //     ] || [];
-
-    //   ds = this.daySchedules.find(i => {
-    //     return i.key == this.daySchedule.key;
-    //   });
-    // }
+    // lay tham chieu den danh sach lichj lam viec theo ngay.
+    this.databaseRef = firebase
+      .database()
+      .ref()
+      .child(
+        Utils.formatDateFromTimestamp(
+          this.daySchedule.date.timestamp,
+          "MM-YYYY"
+        )
+      )
+      .child(Utils.formatDateFromTimestamp(this.daySchedule.date.timestamp));
 
     this.state = {
       daySchedule: this.daySchedule
     };
+  }
+
+  /**
+   * Ham check lieu database ref co null ko.
+   */
+  private isDatabaseRefNull(): boolean {
+    return this.databaseRef == null || this.databaseRef == undefined;
   }
 
   _renderCustomerID = (day: DaySchedule) => {
@@ -116,6 +133,24 @@ class DetailScreen extends React.Component<Props, State> {
           onChangeText={text => {
             this.setState({
               daySchedule: { ...day, name: text }
+            });
+          }}
+        />
+      </View>
+    );
+  };
+
+  _renderCustomerDateOfBirth = (day: DaySchedule) => {
+    return (
+      <View style={styles.itemRoot}>
+        <Text style={styles.headerText}>Ngày sinh khách hàng</Text>
+        <TextInput
+          placeholder="Nhập ngày sinh khách hàng"
+          style={{ marginVertical: 10 }}
+          value={day ? day.dateOfBirth : ""}
+          onChangeText={text => {
+            this.setState({
+              daySchedule: { ...day, dateOfBirth: text }
             });
           }}
         />
@@ -250,6 +285,25 @@ class DetailScreen extends React.Component<Props, State> {
     );
   };
 
+  _renderNote = (day: DaySchedule) => {
+    return (
+      <View style={styles.itemRoot}>
+        <Text style={styles.headerText}>Ghi chú</Text>
+        <TextInput
+          placeholder="Nhập ghi chú"
+          style={{ marginVertical: 10 }}
+          value={day ? day.note : ""}
+          onChangeText={text => {
+            this.setState({
+              daySchedule: { ...day, note: text }
+            });
+          }}
+          numberOfLines={2}
+        />
+      </View>
+    );
+  };
+
   _renderActionButton = () => {
     let btnString = this.isAdd ? "THÊM LỊCH" : "CẬP NHẬT";
     return (
@@ -318,36 +372,19 @@ class DetailScreen extends React.Component<Props, State> {
 
     Alert.alert("", "Xác nhận thêm lịch ?", [
       {
+        text: "CANCEL"
+      },
+      {
         text: "OK",
         onPress: () => {
-          // const time = this.state.daySchedule.date.timestamp;
-          // const strTime = Utils.formatDate(new Date(time));
-          // let datas = this.props.datas;
-          // if (!datas[strTime]) {
-          //   datas[strTime] = [];
-          // }
-          // const nextCount = datas[strTime].length;
-          // let ds = new DaySchedule();
-          // ds.note = "Item for " + strTime;
-          // ds.date = this.state.daySchedule.date;
-          // ds.timeString = Utils.formatDateFromTimestamp(
-          //   ds.date.timestamp,
-          //   "hh:mm A"
-          // );
-          // ds.key = strTime + "-" + nextCount;
-          // ds.phoneNumber = this.state.daySchedule.phoneNumber;
-          // ds.name = this.state.daySchedule.name;
-          // ds.id = this.state.daySchedule.id;
-          // ds.protectorName = this.state.daySchedule.protectorName;
-          // ds.advisoryType = this.state.daySchedule.advisoryType;
-          // datas[strTime].push(ds);
-          // this.props.setDatas(datas);
-          let dbRef = firebase.database().ref();
-          let child = dbRef.child(
-            Utils.formatDateFromTimestamp(this.daySchedule.date.timestamp)
-          );
-          child.push(this.state.daySchedule);
-          NavigationUtils.goBack(this.props.navigation);
+          this.databaseRef.push(this.state.daySchedule, err => {
+            if (err) {
+              Alert.alert("", "Thêm không thành công, vui lòng thử lại!");
+              return;
+            }
+            this.props.addDayschedule(this.state.daySchedule);
+            NavigationUtils.goBack(this.props.navigation);
+          });
         }
       }
     ]);
@@ -355,47 +392,53 @@ class DetailScreen extends React.Component<Props, State> {
 
   // Thực hiện cập nhật thông tin.
   private _handleEdit = (): void => {
-    // Alert.alert("", "Bạn chắc chắn muốn sửa lịch ?", [
-    //   {
-    //     text: "OK",
-    //     onPress: () => {
-    //       this.daySchedules = this.daySchedules.map(i => {
-    //         if (i.key == this.state.daySchedule.key) {
-    //           return this.state.daySchedule;
-    //         }
-    //         return i;
-    //       });
-    //       // update datas.
-    //       let datas = {
-    //         ...this.props.datas,
-    //         [Utils.formatDate(this.daySchedule.date)]: this.daySchedules
-    //       };
-    //       this.props.setDatas(datas);
-    //       NavigationUtils.goBack(this.props.navigation);
-    //     }
-    //   }
-    // ]);
+    Alert.alert("", "Bạn chắc chắn muốn sửa lịch ?", [
+      {
+        text: "CANCEL"
+      },
+      {
+        text: "OK",
+        onPress: () => {
+          var update = {};
+          update[this.state.daySchedule.databaseKey] = this.state.daySchedule;
+          this.databaseRef.update(update, err => {
+            if (err) {
+              Alert.alert("", "Sửa lịch không thành công, vui lòng thử lại!");
+              return;
+            }
+            this.props.updateDaySchedule(
+              this.daySchedule,
+              this.state.daySchedule
+            );
+            NavigationUtils.goBack(this.props.navigation);
+          });
+        }
+      }
+    ]);
   };
 
   // Thực hiện xoá lịch.
   private _handleDelete = (): void => {
-    // Alert.alert("", "Bạn chắc chắn muốn xoá lịch ?", [
-    //   {
-    //     text: "OK",
-    //     onPress: () => {
-    //       this.daySchedules = this.daySchedules.filter(i => {
-    //         return i.key != this.state.daySchedule.key;
-    //       });
-    //       // update datas.
-    //       let datas = {
-    //         ...this.props.datas,
-    //         [Utils.formatDate(this.daySchedule.date)]: this.daySchedules
-    //       };
-    //       this.props.setDatas(datas);
-    //       NavigationUtils.goBack(this.props.navigation);
-    //     }
-    //   }
-    // ]);
+    Alert.alert("", "Bạn chắc chắn muốn xoá lịch ?", [
+      {
+        text: "CANCEL"
+      },
+      {
+        text: "OK",
+        onPress: () => {
+          this.databaseRef
+            .child(this.state.daySchedule.databaseKey)
+            .remove(err => {
+              if (err) {
+                Alert.alert("", "Xoá không thành công, vui lòng thử lại!");
+                return;
+              }
+              this.props.deleteDaySchedule(this.state.daySchedule);
+              NavigationUtils.goBack(this.props.navigation);
+            });
+        }
+      }
+    ]);
   };
 
   render() {
@@ -405,10 +448,12 @@ class DetailScreen extends React.Component<Props, State> {
           <ScrollView>
             {this._renderCustomerID(this.state.daySchedule)}
             {this._renderCustomerName(this.state.daySchedule)}
+            {this._renderCustomerDateOfBirth(this.state.daySchedule)}
             {this._renderProtectorName(this.state.daySchedule)}
             {this._renderTimeString(this.state.daySchedule)}
             {this._renderAdvisoryType(this.state.daySchedule)}
             {this._renderPhoneNumber(this.state.daySchedule)}
+            {this._renderNote(this.state.daySchedule)}
           </ScrollView>
         </View>
 
@@ -417,11 +462,40 @@ class DetailScreen extends React.Component<Props, State> {
       </SafeAreaView>
     );
   }
+
+  componentDidMount() {
+    if (this.isDatabaseRefNull()) {
+      return;
+    }
+    // this.databaseRef.on("child_added", child => {
+    //   console.log("BACHK_CHILD_ADDED: ", child);
+    //   let ds: DaySchedule = new DaySchedule();
+    //   ds.id = child.val().id;
+    //   ds.name = child.val().name;
+    //   ds.protectorName = child.val().protectorName;
+    //   ds.date = child.val().date;
+    //   ds.advisoryType = child.val().advisoryType;
+    //   ds.note = child.val().note;
+    //   ds.databaseKey = child.key;
+
+    //   this.props.addDayschedule(ds);
+    // });
+
+    this.databaseRef.on("child_removed", dataSnapshot => {
+      console.log("BACHK_CHILD_ADDED: ", dataSnapshot);
+      // this.setState({
+      //   items: this.state.items.filter(i => i.key != dataSnapshot.key)
+      // });
+    });
+  }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    setDatas: (datas: any) => dispatch(setDatas(datas))
+    addDayschedule: (ds: DaySchedule) => dispatch(addDaySchedule(ds)),
+    deleteDaySchedule: (ds: DaySchedule) => dispatch(deleteDaySchedule(ds)),
+    updateDaySchedule: (oldDs: DaySchedule, ds: DaySchedule) =>
+      dispatch(updateDaySchedule(oldDs, ds))
   };
 };
 

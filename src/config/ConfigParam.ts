@@ -30,4 +30,12 @@ export default class ConfigParam {
     }
     return this.advisorys;
   }
+
+  public static getPersionAdvisoryType(): Advisory {
+    return this.getAdvisorys().find(i => i.type == AdvisoryType.Persion);
+  }
+
+  public static getFamilyAdvisoryType(): Advisory {
+    return this.getAdvisorys().find(i => i.type == AdvisoryType.Family);
+  }
 }

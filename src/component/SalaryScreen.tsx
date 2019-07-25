@@ -1,45 +1,85 @@
 import * as React from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, FlatList, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
 import ReducerName from "../redux/config/ReducerName";
-import { DaySchedule } from "./HomeScreen";
-import { AdvisoryType } from "../model/Advisory";
-import ConfigParam from "../config/ConfigParam";
+import moment from "moment";
+import colors from "../res/colors";
+import { SafeAreaView } from "react-navigation";
+import NavigationUtils, { Navigation } from "../utills/NavigationUtils";
+import CalendarDay from "../model/CalendarDay";
 
 interface Props {
-  datas: any;
+  // datas: any;
+  navigation: Navigation<any>;
 }
 
 interface State {}
 
+class Month {
+  name: string;
+  number: number;
+}
+
 class SalaryScreen extends React.Component<Props, State> {
-  _renderSaraly = () => {
-    let allKeys = Object.keys(this.props.datas);
+  static navigationOptions = ({ navigation }) => {
+    return {
+      title: new Date().getFullYear().toString()
+    };
+  };
 
-    let salary = 0;
+  private months: Array<Month>;
 
-    allKeys.forEach(item => {
-      let listDS: Array<DaySchedule> = this.props.datas[item];
-      if (listDS && listDS.length > 0) {
-        listDS.forEach(ds => {
-          let s = ConfigParam.getAdvisorys().find(i => {
-            return i.type == ds.advisoryType;
-          }).salary;
-          salary += s;
-        });
-      }
+  constructor(props) {
+    super(props);
+
+    this.months = moment.months().map((i, index) => {
+      let ms = new Month();
+      ms.name = i;
+      ms.number = index;
+      return ms;
     });
+  }
 
-    console.log("BACHK__renderSaraly: ", allKeys);
+  _renderMonths = () => {
     return (
       <View>
-        <Text>adaadd {salary}</Text>
+        <FlatList
+          data={this.months}
+          renderItem={this._renderItem}
+          keyExtractor={(item, index) => item.name}
+        />
       </View>
     );
   };
 
+  _renderItem = ({ item, index }) => {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          let cd = new CalendarDay();
+          cd.month = item.number;
+          cd.year = new Date().getFullYear();
+          cd.timestamp = new Date(cd.year, cd.month).getTime();
+          NavigationUtils.toSalaryForMonthScreen(this.props.navigation, cd);
+        }}
+        style={{
+          padding: 20,
+          backgroundColor: colors.colorWhite,
+          shadowColor: colors.colorBlackMedium,
+          shadowOffset: { width: 3, height: 3 },
+          shadowOpacity: 0.3,
+          margin: 10
+        }}
+      >
+        <Text style={{ fontSize: 16, color: colors.colorBlack }}>
+          {item.name}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
   render() {
-    return <View>{this._renderSaraly()}</View>;
+    return <SafeAreaView>{this._renderMonths()}</SafeAreaView>;
   }
 }
 

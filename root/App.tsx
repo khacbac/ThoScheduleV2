@@ -36,12 +36,14 @@ import colors from "../src/res/colors";
 import ReducerName from "../src/redux/config/ReducerName";
 import SalaryScreen from "../src/component/SalaryScreen";
 import ScheduleList from "../src/component/ScheduleList";
+import SalaryScreenForMonth from "../src/component/SalaryScreenForMonth";
 
 const AppNavigator = createStackNavigator({
   [Screenname.HomeScreen]: HomeScreen,
   [Screenname.DetailScreen]: DetailScreen,
   [Screenname.SalaryScreen]: SalaryScreen,
-  [Screenname.SheduleListScreen]: ScheduleList
+  [Screenname.SheduleListScreen]: ScheduleList,
+  [Screenname.SalaryForMonthScreen]: SalaryScreenForMonth,
 });
 
 const AppContainer = createAppContainer(AppNavigator);
@@ -57,28 +59,6 @@ class App extends React.Component<Props, State> {
     return (
       <View style={{ flex: 1, backgroundColor: "#f3f3f3" }}>
         <AppContainer />
-        {/* Rest of the app comes ABOVE the action button component !*/}
-        {/* {this.props.showFloatButton && (
-          <ActionButton buttonColor={colors.colorMain}>
-            <ActionButton.Item
-              buttonColor="#9b59b6"
-              title="Bảng lương"
-              onPress={() => console.log("notes tapped!")}
-            >
-              <Icon name="md-create" style={styles.actionButtonIcon} />
-            </ActionButton.Item>
-            <ActionButton.Item
-              buttonColor="#3498db"
-              title="Cài đặt"
-              onPress={() => {}}
-            >
-              <Icon
-                name="md-notifications-off"
-                style={styles.actionButtonIcon}
-              />
-            </ActionButton.Item>
-          </ActionButton>
-        )} */}
       </View>
     );
   }

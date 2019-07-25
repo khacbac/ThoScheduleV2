@@ -6,7 +6,8 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView
+  SafeAreaView,
+  ActivityIndicator
 } from "react-native";
 import { connect } from "react-redux";
 import ReducerName from "../redux/config/ReducerName";
@@ -20,58 +21,76 @@ import NavigationUtils, {
 import CalendarDay from "../model/CalendarDay";
 import colors from "../res/colors";
 import Utils from "../utills/Utils";
+import firebase from "react-native-firebase";
+
+import { setDaySchedules } from "../redux/action/AppAction";
+import { Reference } from "react-native-firebase/database";
 
 interface Props {
   navigation: Navigation<any>;
+  setDaySchedules: (ds: Array<DaySchedule>) => void;
+  daySchedules: Array<DaySchedule>;
 }
 
 interface State {
-  datas: Array<DaySchedule>;
+  // datas: Array<DaySchedule>;
+  inProgress: boolean;
 }
 
 class ScheduleListScreen extends React.Component<Props, State> {
+  static navigationOptions = ({ navigation }) => {
+    let ds: CalendarDay = NavigationUtils.getParam<CalendarDay>(
+      navigation,
+      NavigationParamKey.CalendarDay,
+      null
+    );
+    return {
+      title: Utils.formatDateFromTimestamp(ds.timestamp)
+    };
+  };
+
   private calendarDay: CalendarDay;
+  private databaseRef: Reference;
 
   constructor(props) {
     super(props);
+
     this.calendarDay = NavigationUtils.getParam<CalendarDay>(
       this.props.navigation,
       NavigationParamKey.CalendarDay,
       null
     );
 
+    // lay tham chieu den danh sach lichj lam viec theo ngay.
+    this.databaseRef = firebase
+      .database()
+      .ref()
+      .child(
+        Utils.formatDateFromTimestamp(this.calendarDay.timestamp, "MM-YYYY")
+      )
+      .child(Utils.formatDateFromTimestamp(this.calendarDay.timestamp));
+
     console.log("BACHK_ScheduleListScreen: ", this.calendarDay);
-
-    let schedule1 = new DaySchedule();
-    schedule1.id = "MH001";
-    schedule1.name = "Ho Khac Bac 1";
-    schedule1.advisoryType = AdvisoryType.Family;
-
-    let schedule2 = new DaySchedule();
-    schedule2.id = "MH002";
-    schedule2.name = "Ho Khac Bac 2";
-    schedule2.advisoryType = AdvisoryType.Family;
-
-    let schedule3 = new DaySchedule();
-    schedule3.id = "MH003";
-    schedule3.name = "Ho Khac Bac 3";
-    schedule3.advisoryType = AdvisoryType.Persion;
-
-    let arr = [];
-    arr.push(schedule1);
-    arr.push(schedule2);
-    arr.push(schedule3);
+    // reset list schedule.
+    this.props.setDaySchedules([]);
 
     this.state = {
-      datas: arr
+      inProgress: false
     };
+  }
+
+  /**
+   * Ham check lieu database ref co null ko.
+   */
+  private isDatabaseRefNull(): boolean {
+    return this.databaseRef == null || this.databaseRef == undefined;
   }
 
   _renderScheduleList = () => {
     return (
       <View style={{ flex: 1 }}>
         <FlatList
-          data={this.state.datas}
+          data={this.props.daySchedules}
           renderItem={this._renderItem}
           keyExtractor={(item, index) => item.id + index}
           ItemSeparatorComponent={() => {
@@ -117,7 +136,14 @@ class ScheduleListScreen extends React.Component<Props, State> {
         <View style={{ flexDirection: "row", marginTop: 10 }}>
           <Text style={styles.txtLeft}>{`Tên khách hàng: `}</Text>
 
-          <Text style={styles.txtRight}>{`${item.name}`}</Text>
+          <Text style={styles.txtRight}>{`${item.name || ""}`}</Text>
+        </View>
+
+        {/* ngay sinh khach hang */}
+        <View style={{ flexDirection: "row", marginTop: 10 }}>
+          <Text style={styles.txtLeft}>{`Ngày sinh khách hàng: `}</Text>
+
+          <Text style={styles.txtRight}>{`${item.dateOfBirth || ""}`}</Text>
         </View>
 
         {/* ten nguoi giam ho */}
@@ -149,6 +175,13 @@ class ScheduleListScreen extends React.Component<Props, State> {
 
           <Text style={styles.txtRight}>{`${item.phoneNumber || ""}`}</Text>
         </View>
+
+        {/* ghi chu */}
+        <View style={{ flexDirection: "row", marginTop: 10 }}>
+          <Text style={styles.txtLeft}>{`Ghi chú: `}</Text>
+
+          <Text style={styles.txtRight}>{`${item.note || ""}`}</Text>
+        </View>
       </TouchableOpacity>
     );
   };
@@ -168,7 +201,10 @@ class ScheduleListScreen extends React.Component<Props, State> {
           onPress={() => {
             let day: DaySchedule = new DaySchedule();
             day.date = this.calendarDay;
-            day.timeString = Utils.formatDateFromTimestamp(day.date.timestamp,"hh:mm A");
+            day.timeString = Utils.formatDateFromTimestamp(
+              day.date.timestamp,
+              "hh:mm A"
+            );
             NavigationUtils.toDetailScreen(this.props.navigation, day, true);
           }}
         >
@@ -178,23 +214,76 @@ class ScheduleListScreen extends React.Component<Props, State> {
     );
   };
 
+  _renderProgress = () => {
+    if (!this.state.inProgress) return null;
+    return (
+      <View
+        style={{
+          ...StyleSheet.absoluteFillObject,
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      >
+        <ActivityIndicator size="large" color={colors.colorMain} />
+      </View>
+    );
+  };
+
   render() {
     return (
       <View style={{ flex: 1, backgroundColor: colors.colorWhite }}>
         {this._renderScheduleList()}
         {this._renderActionButton()}
+        {this._renderProgress()}
       </View>
     );
+  }
+
+  componentDidMount() {
+    this.setState({ inProgress: true });
+    if (this.isDatabaseRefNull()) {
+      return;
+    }
+
+    // get danh sach lich lam viec tu database.
+    this.databaseRef.once("value", dataSnapshot => {
+      var items: Array<DaySchedule> = new Array<DaySchedule>();
+      dataSnapshot.forEach(child => {
+        let ds: DaySchedule = new DaySchedule();
+        ds.id = child.val().id;
+        ds.name = child.val().name;
+        ds.protectorName = child.val().protectorName;
+        ds.date = child.val().date;
+        ds.advisoryType = child.val().advisoryType;
+        ds.note = child.val().note;
+        ds.databaseKey = child.key;
+        ds.dateOfBirth = child.val().dateOfBirth;
+
+        items.push(ds);
+      });
+
+      this.props.setDaySchedules(items);
+      this.setState({ inProgress: false });
+    });
   }
 }
 
 const mapStateToProps = state => {
   return {
-    datas: state[ReducerName.AppReducer].datas
+    daySchedules: state[ReducerName.AppReducer].daySchedules
   };
 };
 
-export default connect(mapStateToProps)(ScheduleListScreen);
+const mapDispatchToProps = dispatch => {
+  return {
+    setDaySchedules: (ds: Array<DaySchedule>) => dispatch(setDaySchedules(ds))
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ScheduleListScreen);
 
 const styles = StyleSheet.create({
   txtLeft: {

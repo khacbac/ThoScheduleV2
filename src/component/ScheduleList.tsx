@@ -111,78 +111,95 @@ class ScheduleListScreen extends React.Component<Props, State> {
 
   _renderItem = ({ item, index }) => {
     return (
-      <TouchableOpacity
-        style={{ padding: 10 }}
-        onPress={() => {
-          NavigationUtils.toDetailScreen(this.props.navigation, item, false);
-        }}
-      >
-        {/* Ma khach hang */}
-        <View style={{ flexDirection: "row" }}>
-          <Text style={styles.txtLeft}>{`Mã khách hàng:`}</Text>
+      <View style={{ flexDirection: "row" }}>
+        <View style={{ justifyContent: "center", padding: 10 }}>
           <Text
-            style={[
-              styles.txtRight,
-              {
-                color: colors.colorSub
-              }
-            ]}
+            style={{
+              width: 20,
+              height: 20,
+              borderRadius: 20 / 2,
+              textAlign: "center",
+              backgroundColor: colors.colorMain,
+              color: colors.colorWhite,
+              fontSize: 16
+            }}
           >
-            {`${item.id}`}
+            {index + 1}
           </Text>
         </View>
+        <TouchableOpacity
+          style={{ padding: 10, flex: 1 }}
+          onPress={() => {
+            NavigationUtils.toDetailScreen(this.props.navigation, item, false);
+          }}
+        >
+          {/* Ma khach hang */}
+          <View style={{ flexDirection: "row" }}>
+            <Text style={styles.txtLeft}>{`Mã khách hàng:`}</Text>
+            <Text
+              style={[
+                styles.txtRight,
+                {
+                  color: colors.colorSub
+                }
+              ]}
+            >
+              {`${item.id}`}
+            </Text>
+          </View>
 
-        {/* ten khach hang */}
-        <View style={{ flexDirection: "row", marginTop: 10 }}>
-          <Text style={styles.txtLeft}>{`Tên khách hàng: `}</Text>
+          {/* ten khach hang */}
+          <View style={{ flexDirection: "row", marginTop: 10 }}>
+            <Text style={styles.txtLeft}>{`Tên khách hàng: `}</Text>
 
-          <Text style={styles.txtRight}>{`${item.name || ""}`}</Text>
-        </View>
+            <Text style={styles.txtRight}>{`${item.name || ""}`}</Text>
+          </View>
 
-        {/* ngay sinh khach hang */}
-        <View style={{ flexDirection: "row", marginTop: 10 }}>
-          <Text style={styles.txtLeft}>{`Ngày sinh khách hàng: `}</Text>
+          {/* ngay sinh khach hang */}
+          <View style={{ flexDirection: "row", marginTop: 10 }}>
+            <Text style={styles.txtLeft}>{`Ngày sinh khách hàng: `}</Text>
 
-          <Text style={styles.txtRight}>{`${item.dateOfBirth || ""}`}</Text>
-        </View>
+            <Text style={styles.txtRight}>{`${item.dateOfBirth || ""}`}</Text>
+          </View>
 
-        {/* ten nguoi giam ho */}
-        <View style={{ flexDirection: "row", marginTop: 10 }}>
-          <Text style={styles.txtLeft}>{`Tên người giám hộ: `}</Text>
+          {/* ten nguoi giam ho */}
+          <View style={{ flexDirection: "row", marginTop: 10 }}>
+            <Text style={styles.txtLeft}>{`Tên người giám hộ: `}</Text>
 
-          <Text style={styles.txtRight}>{`${item.protectorName || ""}`}</Text>
-        </View>
+            <Text style={styles.txtRight}>{`${item.protectorName || ""}`}</Text>
+          </View>
 
-        {/* thoi gian tu van */}
-        <View style={{ flexDirection: "row", marginTop: 10 }}>
-          <Text style={styles.txtLeft}>{`Thời gian: `}</Text>
+          {/* thoi gian tu van */}
+          <View style={{ flexDirection: "row", marginTop: 10 }}>
+            <Text style={styles.txtLeft}>{`Thời gian: `}</Text>
 
-          <Text style={styles.txtRight}>{`${item.timeString || ""}`}</Text>
-        </View>
+            <Text style={styles.txtRight}>{`${item.timeString || ""}`}</Text>
+          </View>
 
-        {/* loai tu van */}
-        <View style={{ flexDirection: "row", marginTop: 10 }}>
-          <Text style={styles.txtLeft}>{`Loại tư vấn: `}</Text>
+          {/* loai tu van */}
+          <View style={{ flexDirection: "row", marginTop: 10 }}>
+            <Text style={styles.txtLeft}>{`Loại tư vấn: `}</Text>
 
-          <Text style={styles.txtRight}>{`${Advisory.getByType(
-            item.advisoryType
-          )}`}</Text>
-        </View>
+            <Text style={styles.txtRight}>{`${Advisory.getByType(
+              item.advisoryType
+            )}`}</Text>
+          </View>
 
-        {/* so dien thoai */}
-        <View style={{ flexDirection: "row", marginTop: 10 }}>
-          <Text style={styles.txtLeft}>{`Số điện thoại: `}</Text>
+          {/* so dien thoai */}
+          <View style={{ flexDirection: "row", marginTop: 10 }}>
+            <Text style={styles.txtLeft}>{`Số điện thoại: `}</Text>
 
-          <Text style={styles.txtRight}>{`${item.phoneNumber || ""}`}</Text>
-        </View>
+            <Text style={styles.txtRight}>{`${item.phoneNumber || ""}`}</Text>
+          </View>
 
-        {/* ghi chu */}
-        <View style={{ flexDirection: "row", marginTop: 10 }}>
-          <Text style={styles.txtLeft}>{`Ghi chú: `}</Text>
+          {/* ghi chu */}
+          <View style={{ flexDirection: "row", marginTop: 10 }}>
+            <Text style={styles.txtLeft}>{`Ghi chú: `}</Text>
 
-          <Text style={styles.txtRight}>{`${item.note || ""}`}</Text>
-        </View>
-      </TouchableOpacity>
+            <Text style={styles.txtRight}>{`${item.note || ""}`}</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
     );
   };
 
